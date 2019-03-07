@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 8596178660138822908}
   m_Layer: 10
   m_Name: Minion01
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,7 +117,6 @@ MonoBehaviour:
   speed: 2
   jumpForce: 0
   evadeForce: 0
-  iFTime: 0
   attackWithProjectile: 1
   attackCooldownTime: 2
   attackRadius: 0
@@ -126,6 +125,7 @@ MonoBehaviour:
     type: 3}
   attackAnchor: {fileID: 4007621688615519907}
   godMode: 0
+  takeDamageOnColide: 0
   groundCheckAnchor: {fileID: 4007621688945149584}
   groundCheckRadius: 0.3
   groundLayer:
@@ -144,7 +144,7 @@ MonoBehaviour:
   falling: 0
   moving: 0
   grounded: 0
-  onEvanding: 0
+  onEvading: 0
   evanding: 0
   dead: 0
   moveWhileAttack: 0

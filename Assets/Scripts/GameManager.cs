@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     private float spawnCooldown;
     private int spawnedEnemies;
     private List<Enemy> enemyList;
+    private List<Enemy> deadEnemies;
     private Enemy boss;
 
     void Start()
@@ -32,6 +33,8 @@ public class GameManager : MonoBehaviour
         Instance = this;
         spawnCooldown = timeBtwSpawns;
         enemyList = new List<Enemy>();
+        deadEnemies = new List<Enemy>();
+
     }
 
     // Update is called once per frame
@@ -95,11 +98,19 @@ public class GameManager : MonoBehaviour
 
     private bool AllEnemiesDead()
     {
+        deadEnemies.Clear();
+        
         foreach (Enemy e in enemyList)
         {
             if (e.dead)
-                enemyList.Remove(e);
+                deadEnemies.Add(e);
         }
+
+        foreach (Enemy e in deadEnemies)
+        {
+            enemyList.Remove(e);
+        }
+
         return enemyList.Count == 0;
     }
 

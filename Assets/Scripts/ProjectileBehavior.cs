@@ -13,13 +13,11 @@ public class ProjectileBehavior : MonoBehaviour
     public int damage;
 
     public void OnCollisionEnter2D(Collision2D other) {
-        
         if(other.gameObject.CompareTag(playerTag) && !alreadyDealDamage){
             other.gameObject.GetComponent<Player>().TakeDamage(damage);
             alreadyDealDamage = false;
         }
         if(other.gameObject.CompareTag(groundTag)){
-
             Destroy(this);
         }
     }

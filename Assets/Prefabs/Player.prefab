@@ -82,17 +82,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   life: 100
   maxLife: 100
-  attack: 10
+  attack: 15
   speed: 10
   jumpForce: 1500
   evadeForce: 800
-  iFTime: 0.2
   attackWithProjectile: 0
-  attackCooldownTime: 0.1
+  attackCooldownTime: 0.05
   attackRadius: 0.5
   projectileTrowForce: 0
   projectile: {fileID: 0}
   attackAnchor: {fileID: 7776730691267668614}
+  godMode: 0
+  takeDamageOnColide: 1
   groundCheckAnchor: {fileID: 7776730691472754320}
   groundCheckRadius: 0.3
   groundLayer:
@@ -101,12 +102,15 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 1024
+  useBlood: 0
+  bloodParticle: {fileID: 0}
+  bloodSplash: {fileID: 0}
   onJump: 0
   jumping: 0
   falling: 0
   moving: 0
   grounded: 0
-  onEvanding: 0
+  onEvading: 0
   evanding: 0
   dead: 0
 --- !u!212 &7776730691338720820

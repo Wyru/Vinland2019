@@ -11,7 +11,7 @@ public abstract class CharacterBase : MonoBehaviour
     public int life;
     public int maxLife;
     public int attack;
-    public float speed, jumpForce, evadeForce, iFTime;
+    public float speed, jumpForce, evadeForce;
 
     [Header("Attack Parameters")]
     public bool attackWithProjectile;
@@ -22,10 +22,14 @@ public abstract class CharacterBase : MonoBehaviour
 
     [Header("Other Configs")]
     public bool godMode;
+    public bool takeDamageOnColide;
     public Transform groundCheckAnchor;
     public float groundCheckRadius;
+    public float intangibleTime;
     public LayerMask groundLayer;
     public LayerMask enemyLayer;
+    public string enemyTag;
+    protected LayerMask myLayer;
 
     [Header("Blood")]
     public bool useBlood;
@@ -33,19 +37,22 @@ public abstract class CharacterBase : MonoBehaviour
     public GameObject bloodSplash;
 
     [HideInInspector]
-    public bool onJump, jumping, falling, moving, grounded, onEvanding, evanding, dead;
+    public bool onJump, jumping, falling, moving, grounded, onEvading, evanding, dead, intangible;
 
     protected bool attackCooldown;
     protected bool attacking;
-    protected float currentAttackCooldown, currentIF;
+    protected bool onTakingDamage;
+    protected bool takingDamage;
+    protected bool onEndEvade;
+    protected float currentAttackCooldown, currentIntangibleTime;
     protected Rigidbody2D rb;
     protected BoxCollider2D bc;
     protected Animator animator;
     protected SpriteMask sm;
     protected SpriteRenderer sr;
 
-    Vector2 velocity;
-
+    protected Vector2 velocity;
+    protected Vector2 damageImpulse;
 
     virtual protected void Start()
     {
@@ -54,23 +61,14 @@ public abstract class CharacterBase : MonoBehaviour
         animator = this.GetComponent<Animator>();
         sr = this.GetComponent<SpriteRenderer>();
         sm = this.GetComponent<SpriteMask>();
+        myLayer = this.gameObject.layer;
 
         life = maxLife;
     }
 
     virtual protected void Update()
     {
-
-        if (evanding)
-        {
-            if (currentIF > iFTime)
-            {
-                evanding = false;
-                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                bc.enabled = true;
-            }
-            currentIF += Time.deltaTime;
-        }
+        takingDamage = animator.GetCurrentAnimatorStateInfo(0).IsName("Damage");
 
         if (attackCooldown)
         {
@@ -81,6 +79,15 @@ public abstract class CharacterBase : MonoBehaviour
             currentAttackCooldown += Time.deltaTime;
         }
 
+        if (intangible)
+        {
+            if (currentIntangibleTime > intangibleTime)
+            {
+                intangible = false;
+            }
+            currentIntangibleTime += Time.deltaTime;
+        }
+
         if (life <= 0)
         {
             if (!dead)
@@ -88,8 +95,11 @@ public abstract class CharacterBase : MonoBehaviour
                 OnDead();
                 dead = true;
             }
-            sm.sprite = sr.sprite;
-            sr.sortingOrder = -1;
+            if (useBlood)
+            {
+                sm.sprite = sr.sprite;
+                sr.sortingOrder = -1;
+            }
         }
     }
 
@@ -114,27 +124,40 @@ public abstract class CharacterBase : MonoBehaviour
             onJump = false;
             jumping = true;
         }
-        else if (jumping)
-        {
 
-        }
-        else if (falling)
-        {
-            // velocity.y = (-transform.up * fallSpeed).y;
+        if(!evanding && !intangible){
+            gameObject.layer = myLayer;
         }
 
-        if (evanding)
+        if (takingDamage)
         {
-            if (onEvanding)
+            if (onTakingDamage)
+            {
+                velocity = damageImpulse;
+                intangible = true;
+                StartCoroutine(FlashSprite());
+                gameObject.layer = 13;
+                currentIntangibleTime  = 0;
+                onTakingDamage = false;
+            }
+        }
+        else if (evanding)
+        {
+            if (onEvading)
             {
                 // on evade
                 rb.AddForce(transform.right * evadeForce);
-                rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
-                bc.enabled = false;
-                onEvanding = false;
+                gameObject.layer = 13;
+                onEvading = false;
+            }
+            if (onEndEvade)
+            {
+                onEndEvade = false;
+                evanding = false;
+                velocity = Vector2.zero;
             }
         }
-        else if (moving)
+        else if (moving && !takingDamage)
         {
             velocity.x = (transform.right * speed).x;
         }
@@ -168,12 +191,11 @@ public abstract class CharacterBase : MonoBehaviour
 
     public void Jump()
     {
-        if (falling || onJump || jumping)
+        if (falling || onJump || jumping || takingDamage)
             return;
 
         onJump = true;
         animator.SetBool("Jumping", true);
-        Debug.Log("Jump");
 
     }
 
@@ -234,7 +256,6 @@ public abstract class CharacterBase : MonoBehaviour
         attackCooldown = true;
         attacking = true;
         currentAttackCooldown = 0;
-        Debug.Log("Attack");
     }
 
     // Need be added to animation event
@@ -243,7 +264,7 @@ public abstract class CharacterBase : MonoBehaviour
         GameObject go = Instantiate(projectile, attackAnchor.position, Quaternion.identity);
         go.GetComponent<ProjectileBehavior>().damage = attack;
         go.GetComponent<Rigidbody2D>().AddForce(transform.right * projectileTrowForce);
-        Destroy(go,5f);
+        Destroy(go, 5f);
     }
 
     // Need be added to animation event
@@ -252,35 +273,48 @@ public abstract class CharacterBase : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackAnchor.position, attackRadius, enemyLayer);
         foreach (Collider2D hit in hits)
         {
-            Debug.Log(hit.gameObject.name);
-            hit.GetComponent<CharacterBase>().TakeDamage(attack);
+            hit.GetComponent<CharacterBase>().TakeDamage(attack, transform.right);
         }
     }
 
     public virtual void Evade()
     {
-        if (attacking || evanding || jumping || falling)
+        if (attacking || evanding || jumping || falling || takingDamage)
             return;
 
         animator.SetTrigger("Evade");
-        currentIF = 0;
         evanding = true;
-        onEvanding = true;
+        onEvading = true;
 
     }
 
-    public virtual void TakeDamage(int value)
+    public virtual void EndEvade()
     {
-        if (evanding)
+        onEndEvade = true;
+    }
+
+    public virtual void TakeDamage(int value){
+        TakeDamage(value, Vector2.zero);
+    }
+
+    public virtual void TakeDamage(int value, Vector2 damageDir)
+    {
+        if (evanding || takingDamage || intangible)
             return;
 
         animator.SetTrigger("Damage");
+
+        damageImpulse = damageDir.normalized * value;
+        onTakingDamage = true;
         if (!godMode)
             life -= value;
-        if(useBlood && bloodParticle != null){
+
+        if (useBlood && bloodParticle != null)
+        {
             GameObject go = Instantiate(bloodParticle, this.transform.position, Quaternion.identity);
-            Destroy(go,2f);
+            Destroy(go, 2f);
         }
+
         attacking = false;
     }
 
@@ -291,9 +325,9 @@ public abstract class CharacterBase : MonoBehaviour
 
     virtual protected void OnDead()
     {
-        Debug.Log("On Dead");
         animator.SetTrigger("Die");
-        if(useBlood && bloodSplash != null){
+        if (useBlood && bloodSplash != null)
+        {
             Instantiate(bloodSplash, this.transform);
         }
         rb.simulated = false;
@@ -305,5 +339,34 @@ public abstract class CharacterBase : MonoBehaviour
         Destroy(this.GetComponent<Rigidbody2D>());
         Destroy(this.GetComponent<BoxCollider2D>());
     }
+
+    virtual protected void OnCollisionEnter2D(Collision2D other)
+    {
+        if (takeDamageOnColide && other.gameObject.CompareTag(enemyTag))
+        {
+            Vector2 v = rb.velocity != Vector2.zero?-rb.velocity:other.gameObject.GetComponent<Rigidbody2D>().velocity;
+            TakeDamage(other.gameObject.GetComponent<CharacterBase>().attack, v);
+        }
+    }
+
+
+    IEnumerator FlashSprite()
+    {
+        if(intangibleTime > 0) {
+            while (intangible)
+            {
+                if(sr.material.GetFloat("_FlashAmount") > 0){
+                    sr.material.SetFloat("_FlashAmount", 0);
+                }
+                else{
+                    sr.material.SetFloat("_FlashAmount", .8f);
+                }
+                yield return new WaitForSeconds(.1f);
+            }
+            sr.material.SetFloat("_FlashAmount", 0);
+        }
+        
+    }
+
 
 }

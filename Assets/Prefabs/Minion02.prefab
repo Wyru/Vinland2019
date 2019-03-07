@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3898132861990413381}
   m_Layer: 10
   m_Name: Minion02
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57,7 +57,6 @@ MonoBehaviour:
   speed: 5
   jumpForce: 0
   evadeForce: 0
-  iFTime: 0
   attackWithProjectile: 0
   attackCooldownTime: 1
   attackRadius: 0.5
@@ -65,6 +64,7 @@ MonoBehaviour:
   projectile: {fileID: 0}
   attackAnchor: {fileID: 449973559617603731}
   godMode: 0
+  takeDamageOnColide: 0
   groundCheckAnchor: {fileID: 3709172136463444165}
   groundCheckRadius: 0.3
   groundLayer:
@@ -73,6 +73,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
+  enemyTag: 
   useBlood: 1
   bloodParticle: {fileID: 1522604732244679796, guid: 28ff73bbce38b774b84c0c2aa4364742,
     type: 3}
@@ -83,7 +84,7 @@ MonoBehaviour:
   falling: 0
   moving: 0
   grounded: 0
-  onEvanding: 0
+  onEvading: 0
   evanding: 0
   dead: 0
   moveWhileAttack: 0

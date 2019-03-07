@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1365504433}
   m_Layer: 10
   m_Name: Boss01
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57,7 +57,6 @@ MonoBehaviour:
   speed: 6
   jumpForce: 0
   evadeForce: 0
-  iFTime: 0
   attackWithProjectile: 0
   attackCooldownTime: 1
   attackRadius: 0.5
@@ -65,6 +64,7 @@ MonoBehaviour:
   projectile: {fileID: 0}
   attackAnchor: {fileID: 1994348967}
   godMode: 0
+  takeDamageOnColide: 0
   groundCheckAnchor: {fileID: 1688591688}
   groundCheckRadius: 0.3
   groundLayer:
@@ -83,7 +83,7 @@ MonoBehaviour:
   falling: 0
   moving: 0
   grounded: 0
-  onEvanding: 0
+  onEvading: 0
   evanding: 0
   dead: 0
   moveWhileAttack: 0
