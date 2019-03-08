@@ -128,12 +128,14 @@ MonoBehaviour:
   takeDamageOnColide: 0
   groundCheckAnchor: {fileID: 4007621688945149584}
   groundCheckRadius: 0.3
+  intangibleTime: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
+  enemyTag: 
   useBlood: 1
   bloodParticle: {fileID: 1522604732244679796, guid: 28ff73bbce38b774b84c0c2aa4364742,
     type: 3}
@@ -147,9 +149,10 @@ MonoBehaviour:
   onEvading: 0
   evanding: 0
   dead: 0
+  intangible: 0
   moveWhileAttack: 0
   chasePlayer: 1
-  chaseStopDistance: 3
+  chaseStopDistance: 6
   state: 0
 --- !u!212 &4007621689325838110
 SpriteRenderer:

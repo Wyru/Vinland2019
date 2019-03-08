@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class GameManager : MonoBehaviour
     public Transform enemyContainer;
 
     [Header("Level Config")]
+    public bool spawnEnemies;
     public int numberOfEnemies;
     public GameObject[] enemies;
     public GameObject bossPrefab;
@@ -25,7 +27,6 @@ public class GameManager : MonoBehaviour
     private float spawnCooldown;
     private int spawnedEnemies;
     private List<Enemy> enemyList;
-    private List<Enemy> deadEnemies;
     private Enemy boss;
 
     void Start()
@@ -33,13 +34,14 @@ public class GameManager : MonoBehaviour
         Instance = this;
         spawnCooldown = timeBtwSpawns;
         enemyList = new List<Enemy>();
-        deadEnemies = new List<Enemy>();
-
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(!spawnEnemies)
+            return;
+
         if (spawnedEnemies < numberOfEnemies)
         {
             if (spawnCooldown > timeBtwSpawns)
@@ -98,20 +100,7 @@ public class GameManager : MonoBehaviour
 
     private bool AllEnemiesDead()
     {
-        deadEnemies.Clear();
-        
-        foreach (Enemy e in enemyList)
-        {
-            if (e.dead)
-                deadEnemies.Add(e);
-        }
-
-        foreach (Enemy e in deadEnemies)
-        {
-            enemyList.Remove(e);
-        }
-
-        return enemyList.Count == 0;
+        return enemyList.All(e=> e.dead);
     }
 
     private void SpawnEnemy(Transform t)
@@ -128,4 +117,5 @@ public class GameManager : MonoBehaviour
         Enemy e = Instantiate(bossPrefab, t.position, Quaternion.identity, enemyContainer).GetComponent<Enemy>();
         boss = e;
     }
+    
 }

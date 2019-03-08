@@ -54,6 +54,9 @@ public abstract class CharacterBase : MonoBehaviour
     protected Vector2 velocity;
     protected Vector2 damageImpulse;
 
+    public delegate void DealDamage(int value);
+    public static event DealDamage OnDealDamage;
+
     virtual protected void Start()
     {
         rb = this.GetComponent<Rigidbody2D>();
@@ -125,7 +128,8 @@ public abstract class CharacterBase : MonoBehaviour
             jumping = true;
         }
 
-        if(!evanding && !intangible){
+        if (!evanding && !intangible)
+        {
             gameObject.layer = myLayer;
         }
 
@@ -137,7 +141,7 @@ public abstract class CharacterBase : MonoBehaviour
                 intangible = true;
                 StartCoroutine(FlashSprite());
                 gameObject.layer = 13;
-                currentIntangibleTime  = 0;
+                currentIntangibleTime = 0;
                 onTakingDamage = false;
             }
         }
@@ -240,7 +244,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     public virtual void Attack()
     {
-        if (attackCooldown || moving || evanding)
+        if (attackCooldown || evanding)
             return;
 
         if (falling || jumping)
@@ -255,6 +259,7 @@ public abstract class CharacterBase : MonoBehaviour
 
         attackCooldown = true;
         attacking = true;
+        Idle();
         currentAttackCooldown = 0;
     }
 
@@ -274,6 +279,8 @@ public abstract class CharacterBase : MonoBehaviour
         foreach (Collider2D hit in hits)
         {
             hit.GetComponent<CharacterBase>().TakeDamage(attack, transform.right);
+            if(OnDealDamage != null)
+                OnDealDamage(attack);
         }
     }
 
@@ -293,7 +300,8 @@ public abstract class CharacterBase : MonoBehaviour
         onEndEvade = true;
     }
 
-    public virtual void TakeDamage(int value){
+    public virtual void TakeDamage(int value)
+    {
         TakeDamage(value, Vector2.zero);
     }
 
@@ -344,28 +352,36 @@ public abstract class CharacterBase : MonoBehaviour
     {
         if (takeDamageOnColide && other.gameObject.CompareTag(enemyTag))
         {
-            Vector2 v = rb.velocity != Vector2.zero?-rb.velocity:other.gameObject.GetComponent<Rigidbody2D>().velocity;
+            Vector2 v = rb.velocity != Vector2.zero ? -rb.velocity : other.gameObject.GetComponent<Rigidbody2D>().velocity;
             TakeDamage(other.gameObject.GetComponent<CharacterBase>().attack, v);
         }
     }
 
+    protected virtual void GainLife(int value){
+        life+=value;
+        if(life > maxLife)
+            life = maxLife;
+    }
 
     IEnumerator FlashSprite()
     {
-        if(intangibleTime > 0) {
+        if (intangibleTime > 0)
+        {
             while (intangible)
             {
-                if(sr.material.GetFloat("_FlashAmount") > 0){
+                if (sr.material.GetFloat("_FlashAmount") > 0)
+                {
                     sr.material.SetFloat("_FlashAmount", 0);
                 }
-                else{
+                else
+                {
                     sr.material.SetFloat("_FlashAmount", .8f);
                 }
                 yield return new WaitForSeconds(.1f);
             }
             sr.material.SetFloat("_FlashAmount", 0);
         }
-        
+
     }
 
 
