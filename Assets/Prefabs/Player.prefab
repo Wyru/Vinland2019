@@ -4744,6 +4744,9 @@ GameObject:
   - component: {fileID: 7776730691338720822}
   - component: {fileID: 7776730691338720823}
   - component: {fileID: 7776730691338720816}
+  - component: {fileID: 1001905002}
+  - component: {fileID: 1001905001}
+  - component: {fileID: 1001905007}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -4777,7 +4780,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7776730691338720810}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 688d05586c2b61d419018549bdc7f64f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -4794,6 +4796,7 @@ MonoBehaviour:
   projectile: {fileID: 0}
   attackAnchor: {fileID: 7776730691267668614}
   godMode: 0
+  haveAirAttack: 1
   takeDamageOnColide: 0
   groundCheckAnchor: {fileID: 7776730691472754320}
   groundCheckRadius: 0.3
@@ -4819,7 +4822,7 @@ MonoBehaviour:
   intangible: 0
   maxBerserkValue: 100
   currentBerserk: 0
-  bloodToBerserk: 0.39
+  bloodToBerserk: 0.3
   berserkActive: 0
   berserkDuration: 5
   berserkAttackMod: 20
@@ -4941,6 +4944,134 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!82 &1001905002
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7776730691338720810}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.51
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1001905001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7776730691338720810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6330106b2dbc9a54098de661738dd48c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walk: {fileID: 0}
+  jump: {fileID: 8300000, guid: 20deaa951eeeda24eb6afcebc90b227a, type: 3}
+  attack: {fileID: 8300000, guid: f8dd88718bb8d6942ba82374b0fc1149, type: 3}
+  damage: {fileID: 8300000, guid: 7ef37748ea556c747b3f7168a815109a, type: 3}
+  evade: {fileID: 0}
+  die: {fileID: 8300000, guid: 7c44b481a2ff6a340b47b95c5c391b70, type: 3}
+  attackDelay: 0.25
+--- !u!114 &1001905007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7776730691338720810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d58629fe9acd084a9d95998a77449d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  awakening: {fileID: 8300000, guid: d538705ccdc612049a88d09071502cdc, type: 3}
 --- !u!1 &7776730691472754327
 GameObject:
   m_ObjectHideFlags: 0

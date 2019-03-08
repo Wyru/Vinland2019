@@ -21,6 +21,10 @@ public class Player : CharacterBase
     private int normalAttack;
 
     private Material myMaterial;
+
+
+    public delegate void PlayerBerserk();
+    public event PlayerBerserk OnPlayerBerserk;
     
     protected override void Start() {
         base.Start();
@@ -69,6 +73,8 @@ public class Player : CharacterBase
             currentBerserkTime = berserkDuration;
             currentLifeTime = 0;
             berserkActive = true;
+            if(OnPlayerBerserk != null) 
+                OnPlayerBerserk.Invoke();
         }
         
     }

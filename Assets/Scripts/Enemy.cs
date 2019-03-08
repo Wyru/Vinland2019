@@ -27,7 +27,7 @@ public class Enemy : CharacterBase
     {
         base.Update();
 
-        if (dead)
+        if (dead ||GameManager.Instance.gameOver)
             return;
 
         player = GameManager.Instance.player;

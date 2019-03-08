@@ -22,6 +22,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     [Header("Other Configs")]
     public bool godMode;
+    public bool haveAirAttack;
     public bool takeDamageOnColide;
     public Transform groundCheckAnchor;
     public float groundCheckRadius;
@@ -54,8 +55,27 @@ public abstract class CharacterBase : MonoBehaviour
     protected Vector2 velocity;
     protected Vector2 damageImpulse;
 
+    //Events
     public delegate void DealDamage(int value);
-    public static event DealDamage OnDealDamage;
+    public event DealDamage OnDealDamage;
+
+    public delegate void CharacterAttack();
+    public event CharacterAttack OnCharacterAttack;
+
+    public delegate void CharacterJump();
+    public event CharacterJump OnCharacterJump;
+
+    public delegate void CharacterEvade();
+    public event CharacterJump OnCharacterEvade;
+
+    public delegate void CharacterWalk();
+    public event CharacterWalk OnCharacterWalk;
+
+    public delegate void CharacterTakeDamage();
+    public event CharacterTakeDamage OnCharacterTakeDamage;
+
+    public delegate void CharacterDie();
+    public event CharacterDie OnCharacterDie;
 
     virtual protected void Start()
     {
@@ -164,6 +184,10 @@ public abstract class CharacterBase : MonoBehaviour
         else if (moving && !takingDamage)
         {
             velocity.x = (transform.right * speed).x;
+            if(velocity.y == 0){
+                if(OnCharacterWalk!=null)
+                    OnCharacterWalk.Invoke();
+            }
         }
         else
         {
@@ -200,7 +224,7 @@ public abstract class CharacterBase : MonoBehaviour
 
         onJump = true;
         animator.SetBool("Jumping", true);
-
+        if (OnCharacterJump != null) OnCharacterJump.Invoke();
     }
 
 
@@ -244,11 +268,14 @@ public abstract class CharacterBase : MonoBehaviour
 
     public virtual void Attack()
     {
-        if (attackCooldown || evanding)
+        if (attackCooldown || evanding || attacking)
             return;
 
         if (falling || jumping)
         {
+            if(!haveAirAttack){
+                return;
+            }
             rb.velocity.Set(0, 0);
             animator.SetTrigger("Attack02");
         }
@@ -261,6 +288,9 @@ public abstract class CharacterBase : MonoBehaviour
         attacking = true;
         Idle();
         currentAttackCooldown = 0;
+
+        if (OnCharacterAttack != null)
+            OnCharacterAttack.Invoke();
     }
 
     // Need be added to animation event
@@ -279,7 +309,8 @@ public abstract class CharacterBase : MonoBehaviour
         foreach (Collider2D hit in hits)
         {
             hit.GetComponent<CharacterBase>().TakeDamage(attack, transform.right);
-            if(OnDealDamage != null)
+
+            if (OnDealDamage != null)
                 OnDealDamage(attack);
         }
     }
@@ -292,6 +323,8 @@ public abstract class CharacterBase : MonoBehaviour
         animator.SetTrigger("Evade");
         evanding = true;
         onEvading = true;
+        if (OnCharacterEvade != null)
+            OnCharacterEvade.Invoke();
 
     }
 
@@ -323,6 +356,9 @@ public abstract class CharacterBase : MonoBehaviour
             Destroy(go, 2f);
         }
 
+        if (OnCharacterTakeDamage != null)
+            OnCharacterTakeDamage.Invoke();
+
         attacking = false;
     }
 
@@ -340,6 +376,9 @@ public abstract class CharacterBase : MonoBehaviour
         }
         rb.simulated = false;
         bc.enabled = false;
+
+        if (OnCharacterDie != null)
+            OnCharacterDie.Invoke();
     }
 
     private void OnDestroy()
@@ -357,9 +396,10 @@ public abstract class CharacterBase : MonoBehaviour
         }
     }
 
-    protected virtual void GainLife(int value){
-        life+=value;
-        if(life > maxLife)
+    protected virtual void GainLife(int value)
+    {
+        life += value;
+        if (life > maxLife)
             life = maxLife;
     }
 
